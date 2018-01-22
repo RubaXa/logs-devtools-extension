@@ -9,7 +9,6 @@ func TestStart(t *testing.T) {
 	m.Gen(5)
 
 	tail, lines, err := StartTail(testLogFilename, 2)
-	defer tail.Close()
 
 	if err != nil {
 		t.Fatal(err)
@@ -26,6 +25,8 @@ func TestStart(t *testing.T) {
 	if v := lines[0]; v != "L3" {
 		t.Error("Failed item: " + v)
 	}
+
+	tail.Close()
 }
 
 func TestSubscribe(t *testing.T) {
@@ -33,7 +34,6 @@ func TestSubscribe(t *testing.T) {
 	m.Gen(5)
 
 	tail, lines, err := StartTail(testLogFilename, 0)
-	defer tail.Close()
 
 	if err != nil {
 		t.Fatal(err)
@@ -73,6 +73,8 @@ func TestSubscribe(t *testing.T) {
 	if v := newLines[1]; v != "bar" {
 		t.Errorf("Failed #1 -> %s\n", v)
 	}
+
+	tail.Close()
 }
 
 func TestMany(t *testing.T) {

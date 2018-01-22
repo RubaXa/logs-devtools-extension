@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/fsnotify/fsnotify"
@@ -33,10 +32,12 @@ func (t *Tail) Start(filename string) (err error) {
 		return
 	}
 
-	go func() {
-		t.offset = t.FileSize()
-		fmt.Println("Start watcher:", t.offset)
+	t.file = file
+	t.watcher = watcher
+	t.Filename = filename
+	t.offset = t.FileSize()
 
+	go func() {
 		for event := range watcher.Events {
 			if event.Op&fsnotify.Write == fsnotify.Write {
 				if t.IsActive() {
@@ -46,13 +47,7 @@ func (t *Tail) Start(filename string) (err error) {
 				}
 			}
 		}
-
-		fmt.Println("End watcher")
 	}()
-
-	t.file = file
-	t.watcher = watcher
-	t.Filename = filename
 
 	return
 }
@@ -69,19 +64,25 @@ func (t *Tail) Close() {
 
 func (t *Tail) ReadNew() {
 	size := t.FileSize()
-
-	fmt.Println("ReadNew:", t.offset, size)
-
 	chunkSize := size - t.offset
 	chunk := make([]byte, chunkSize)
 	_, err := t.file.ReadAt(chunk, t.offset)
 
 	if err == nil && chunkSize > 0 {
-		if chunk[chunkSize-1] == '\n' {
-			chunk = chunk[:chunkSize-1]
+		lastIdx := 0
+
+		for i := 0; i < len(chunk); i++ {
+			if chunk[i] == '\n' {
+				if i > 0 {
+					t.NotifyAll(string(chunk[lastIdx:i]))
+				}
+				lastIdx = i + 1
+			}
 		}
 
-		t.NotifyAll(string(chunk))
+		if lastIdx != len(chunk) {
+			t.NotifyAll(string(chunk[lastIdx:]))
+		}
 	}
 
 	t.offset = size
