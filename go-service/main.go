@@ -3,80 +3,68 @@ package main
 import (
 	"fmt"
 	"log"
-	"os"
-
-	"github.com/fsnotify/fsnotify"
 )
 
 func main() {
 	filename := "./tmp.log"
-	watcher, err := fsnotify.NewWatcher()
+	_, lines, err := StartTail(filename, 3)
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	defer watcher.Close()
+	fmt.Println("Lines:", lines)
 
-	file, err := os.Open(filename)
+	// watcher, err := fsnotify.NewWatcher()
 
-	if err != nil {
-		log.Fatal(err)
-	}
+	// defer watcher.Close()
 
-	defer file.Close()
+	// file, err := os.Open(filename)
 
-	offset := int64(0)
-	readLog := func() string {
-		fs, _ := file.Stat()
-		size := fs.Size()
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
 
-		if offset > size {
-			offset = 0
-		}
+	// defer file.Close()
 
-		bytes := make([]byte, size-offset)
-		n, err := file.ReadAt(bytes, offset)
+	// offset := int64(0)
+	// readLog := func() string {
+	// 	fs, _ := file.Stat()
+	// 	size := fs.Size()
 
-		if err != nil {
-			fmt.Println("[err] read:", err)
-		}
+	// 	if offset > size {
+	// 		offset = 0
+	// 	}
 
-		fmt.Printf("[info] Readed: %d, Offset: %d, Size: %d\n", offset, size, n)
-		offset = size
+	// 	bytes := make([]byte, size-offset)
+	// 	n, err := file.ReadAt(bytes, offset)
 
-		return string(bytes)
-	}
+	// 	if err != nil {
+	// 		fmt.Println("[err] read:", err)
+	// 	}
 
-	fmt.Println(readLog())
+	// 	fmt.Printf("[info] Readed: %d, Offset: %d, Size: %d\n", offset, size, n)
+	// 	offset = size
 
-	modified := make(chan string)
-	go func() {
-		for filename := range modified {
-			fmt.Println(filename)
-			fmt.Println(readLog())
-		}
-	}()
+	// 	return string(bytes)
+	// }
 
-	done := make(chan bool)
-	go func() {
-		for {
-			select {
-			case event := <-watcher.Events:
-				if event.Op&fsnotify.Write == fsnotify.Write {
-					modified <- event.Name
-				}
+	// fmt.Println(readLog())
 
-			case err := <-watcher.Errors:
-				log.Println("error:", err)
-			}
-		}
-	}()
+	// modified := make(chan string)
+	// go func() {
+	// 	for filename := range modified {
+	// 		fmt.Println(filename)
+	// 		fmt.Println(readLog())
+	// 	}
+	// }()
 
-	err = watcher.Add(filename)
-	if err != nil {
-		log.Fatal(err)
-	}
+	// done := make(chan bool)
 
-	<-done
+	// err = watcher.Add(filename)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+
+	// <-done
 }
