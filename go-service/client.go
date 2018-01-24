@@ -12,6 +12,14 @@ import (
 	"github.com/gobwas/ws/wsutil"
 )
 
+func NewClient(id string, conn net.Conn) *Client {
+	return &Client{
+		id:   id,
+		conn: conn,
+		logs: make(map[string]tailTarget),
+	}
+}
+
 type Client struct {
 	id     string
 	conn   net.Conn
@@ -75,6 +83,11 @@ func (c *Client) Setup(rawLogs []string) (map[string]tailTarget, error) {
 			}
 
 			target.Sub = tail.Subscribe()
+			go func() {
+				for v := range target.Sub.Flow {
+					c.PushEvent("record", v)
+				}
+			}()
 		}
 	}
 
@@ -82,18 +95,19 @@ func (c *Client) Setup(rawLogs []string) (map[string]tailTarget, error) {
 }
 
 func (c *Client) PushEvent(t string, d interface{}) {
-	if !c.closed {
-		fmt.Println("[client] [ws] Push unacceptably, because closed", c.id)
+	if c.closed {
+		fmt.Println("[client] [ws] Push unacceptably, because ws is closed", c.id)
 		return
 	}
 
-	msg, err := json.Marshal(wsEvent{t, d})
+	json, err := json.Marshal(wsEvent{t, d})
 	if err != nil {
 		fmt.Println("[client] [ws] Push failed", c.id, err)
 		return
 	}
 
-	wsutil.WriteServerMessage(c.conn, ws.OpText, msg)
+	fmt.Println("[client] [ws] Push Event:", string(json))
+	wsutil.WriteServerMessage(c.conn, ws.OpText, json)
 }
 
 func (c *Client) Close() {

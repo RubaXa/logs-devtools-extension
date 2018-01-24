@@ -96,7 +96,6 @@ func (t *Tail) ReadLast(n int) (lines []string) {
 	remains := t.FileSize()
 	buf := make([]byte, 0, chunkSize)
 
-MAIN:
 	for remains != 0 {
 		size := int64(chunkSize)
 
@@ -113,20 +112,20 @@ MAIN:
 		}
 
 		buf = append(chunk, buf...)
-
 		lastIdx := len(buf)
+
 		if buf[lastIdx-1] == '\n' {
 			lastIdx--
 		}
 
-		for i := lastIdx - 1; i >= 0; i-- {
-			if buf[i] == '\n' {
+		for i := lastIdx - 1; i >= -1; i-- {
+			if i < 0 || buf[i] == '\n' {
 				line := string(buf[i+1 : lastIdx])
 				lines = append([]string{line}, lines...)
 				lastIdx = i
 
-				if len(lines) == n {
-					break MAIN
+				if len(lines) == n || i < 0 {
+					return lines
 				}
 			}
 		}

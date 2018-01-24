@@ -20,11 +20,7 @@ type HttpServer struct {
 func (srv *HttpServer) AddClient(id string, conn net.Conn) {
 	srv.RemoveClient(id)
 
-	client := &Client{
-		id:   id,
-		conn: conn,
-	}
-
+	client := NewClient(id, conn)
 	client.Start()
 	srv.clients[id] = client
 }
