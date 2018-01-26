@@ -1,0 +1,28 @@
+<template observed="name">
+	<style>
+		:host {
+			display: inline-block;
+			vertical-align: middle;
+		}
+
+		svg {
+			width: 1.5em;
+		}
+	</style>
+
+	<svg
+		aria-hidden="true" data-fa-processed="" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="${attrs.path}"
+	></path></svg>
+</template>
+
+<script src="./elements.predefine.js"></script>
+<script type="module">
+	import {define} from './elements.js';
+	import {MAP} from './x-icon.map.js';
+
+	define((XElement) => class extends XElement {
+		get path() {
+			return MAP[this.name];
+		}
+	});
+</script>

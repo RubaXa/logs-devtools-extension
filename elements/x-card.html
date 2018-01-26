@@ -1,0 +1,17 @@
+<template>
+	<style>
+		.card {
+			padding: 10px;
+		}
+	</style>
+	
+	<div class="card">
+		<slot></slot>
+	</div>
+</template>
+
+<script src="./elements.predefine.js"></script>
+<script type="module">
+	import {define} from './elements.js';
+	define();
+</script>

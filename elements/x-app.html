@@ -1,0 +1,57 @@
+<template observed="logs">
+	<style>
+		h2, h3 {
+			margin: 0;
+			padding: 0;
+		}
+
+		input {
+			border: 1px solid var(--gray);
+			font-size: 14px;
+			padding: 3px 5px 4px;
+			vertical-align: middle;
+		}
+
+		form {
+			margin: 5px;
+			padding: 5px;
+		}
+	</style>
+
+	<x-card>
+		<h2>Settings</h2>
+		
+		<form name="log" ref="logForm">
+			<b>Tail</h3>
+			<input name="n" placeholder="-n"/>
+			<input name="file" placeholder="File"/>
+			<x-btn value="Add" type="primary"></x-btn>
+		</form>
+	</x-card>
+</template>
+
+<script src="./elements.predefine.js"></script>
+<script type="module">
+	import {define} from './elements.js';
+
+	define(XElement => class extends XElement {
+		constructor() {
+			super();
+			
+			this.logs = [{
+				file: '/nginx.log',
+				n: 0, 
+			}];
+		}
+
+		connectedCallback() {
+			super.connectedCallback()
+			this.refs.logForm.addEventListener('submit', this);
+		}
+
+		handleEvent(evt) {
+			console.log(evt);
+			evt.preventDefault();
+		}
+	});
+</script>

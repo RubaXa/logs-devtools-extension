@@ -1,0 +1,1 @@
+window['__importDocument__'] = document.currentScript.ownerDocument;

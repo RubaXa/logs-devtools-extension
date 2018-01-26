@@ -1,14 +1,21 @@
 <html>
 <head>
 	<title>Logs devtools / Panel</title>
-	<style>
-		html, body {
-			margin: 0;
-			padding: 0;
-		}
-	</style>
+
+	<link rel="stylesheet" href="./style.css" />
+
+	<link rel="import" href="./elements/x-if.html" />
+	
+	<link rel="import" href="./elements/x-btn.html" />
+	<link rel="import" href="./elements/x-badge.html" />
+	<link rel="import" href="./elements/x-icon.html" />
+	<link rel="import" href="./elements/x-card.html" />
+
+	<link rel="import" href="./elements/x-app.html" />
 </head>
 <body>
+	<x-app section="settings" text="Wow"></x-app>
+
 	<div id="panel-canvas">await</div>
 	<script type="module" src="./panel.js"></script>
 </body>

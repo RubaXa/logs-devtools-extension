@@ -1,0 +1,26 @@
+<template observed="test"></template>
+
+<script src="./elements.predefine.js"></script>
+<script type="module">
+	import {define, detachChildren} from './elements.js';
+
+	define(XElement => class extends XElement {
+		connectedCallback() {
+			if (this.test) {
+				this.getShadowRoot().appendChild(detachChildren(this));
+			}
+		}
+
+		attributeChangedCallback() {
+			const shadowRoot = this.getShadowRoot()
+
+			if (this.test === 'true') {
+				this.__children && shadowRoot.appendChild(this.__children);
+			} else {
+				this.__children = detachChildren(shadowRoot);
+			}
+		}
+	}, {
+		test: (elem) => elem.test,
+	});
+</script>

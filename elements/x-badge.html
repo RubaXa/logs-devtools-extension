@@ -1,0 +1,35 @@
+<template>
+	<style>
+		div {
+			display: inline-block;
+			padding: .25em .4em;
+			font-size: 75%;
+			font-weight: 700;
+			line-height: 1;
+			text-align: center;
+			white-space: nowrap;
+			vertical-align: baseline;
+			border-radius: var(--radius);
+			background: var(--secondary);
+			color: var(--text);
+		}
+
+		.primary {
+			background-color: var(--primary);
+		}
+
+		.warning {
+			background-color: var(--warning);
+		}
+	</style>
+	
+	<div class="${attrs.type}">
+		${attrs.value}
+	</div>
+</template>
+
+<script src="./elements.predefine.js"></script>
+<script type="module">
+	import {define} from './elements.js';
+	define();
+</script>
